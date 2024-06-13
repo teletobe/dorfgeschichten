@@ -1,26 +1,20 @@
-//  "mongodb+srv://tobiashchristoph:4ShZFZtjWKgYCPFV@podcastcluster.qa6axf0.mongodb.net/?retryWrites=true&w=majority&appName=PodcastCluster";
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
+const cors = require("cors"); // Import CORS middleware
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const mongoUri = process.env.MONGODB_URI; // Update to use environment variable
+app.use(cors()); // Enable CORS for all routes
 
-// Replace your mongoose.connect line with this
-mongoose.connect(mongoUri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+// MongoDB connection setup
+const mongoUri = process.env.MONGODB_URI;
+mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const commentSchema = new mongoose.Schema({
   name: String,
   comment: String,
-});
-
-// Define routes
-app.get("/", (req, res) => {
-  res.send("Welcome to my podcast website!");
 });
 
 const Comment = mongoose.model("Comment", commentSchema);
