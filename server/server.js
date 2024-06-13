@@ -4,9 +4,8 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const mongoUri =
-  process.env.MONGO_URI ||
-  "mongodb+srv://tobiashchristoph:4ShZFZtjWKgYCPFV@podcastcluster.qa6axf0.mongodb.net/?retryWrites=true&w=majority&appName=PodcastCluster";
+const mongoUri = process.env.MONGO_URI;
+//  "mongodb+srv://tobiashchristoph:4ShZFZtjWKgYCPFV@podcastcluster.qa6axf0.mongodb.net/?retryWrites=true&w=majority&appName=PodcastCluster";
 
 mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
 
