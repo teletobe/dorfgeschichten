@@ -1,4 +1,4 @@
-const correctPassword = "4ShZFZtjWKgYCPFV"; // Set your desired password here
+const correctPassword = "tobiiscool"; // Set your desired password here
 
 function checkPassword() {
   const passwordInput = document.getElementById("password-input").value;
