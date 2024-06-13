@@ -4,6 +4,9 @@ const commentsList = document.getElementById("comments-list");
 const passwordInput = document.getElementById("password-input");
 const errorMessage = document.getElementById("error-message");
 
+const loginUrl = "/login"; // Adjust if necessary based on deployment environment
+const commentsUrl = "/comments"; // Adjust if necessary based on deployment environment
+
 passwordForm.addEventListener("submit", async function (event) {
   event.preventDefault();
   const password = passwordInput.value;
