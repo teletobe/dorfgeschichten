@@ -1,83 +1,58 @@
-const passwordForm = document.getElementById("password-form");
-const commentForm = document.getElementById("comment-form");
-const commentsList = document.getElementById("comments-list");
-const passwordInput = document.getElementById("password-input");
-const errorMessage = document.getElementById("error-message");
+const correctPassword = "tobiiscool"; // Set your desired password here
 
-const loginUrl = "/login"; // Adjust if necessary based on deployment environment
-const commentsUrl = "/comments"; // Adjust if necessary based on deployment environment
+function checkPassword() {
+  const passwordInput = document.getElementById("password-input").value;
+  const errorMessage = document.getElementById("error-message");
 
-passwordForm.addEventListener("submit", async function (event) {
-  event.preventDefault();
-  const password = passwordInput.value;
-
-  try {
-    const response = await fetch("/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ password }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Incorrect password");
-    }
-
+  if (passwordInput === correctPassword) {
     document.getElementById("password-section").style.display = "none";
     document.getElementById("podcast-section").style.display = "block";
-    errorMessage.textContent = "";
     loadComments();
-  } catch (error) {
+  } else {
     errorMessage.textContent = "Incorrect password. Please try again.";
   }
-});
+}
 
-commentForm.addEventListener("submit", async function (event) {
-  event.preventDefault();
-  const name = document.getElementById("name").value;
-  const comment = document.getElementById("comment").value;
+document
+  .getElementById("comment-form")
+  .addEventListener("submit", function (event) {
+    event.preventDefault();
+    const name = document.getElementById("name").value;
+    const comment = document.getElementById("comment").value;
 
-  try {
-    const response = await fetch("/comments", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name, comment }),
-    });
+    if (name && comment) {
+      const commentData = { name, comment };
 
-    if (!response.ok) {
-      throw new Error("Failed to post comment");
+      fetch("/comments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(commentData),
+      })
+        .then((response) => response.json())
+        .then((comment) => {
+          addCommentToList(comment);
+          document.getElementById("comment-form").reset();
+        })
+        .catch((error) => console.error("Error:", error));
     }
-
-    const commentElement = document.createElement("div");
-    commentElement.innerHTML = `<strong>${name}</strong>: ${comment}`;
-    commentsList.appendChild(commentElement);
-
-    document.getElementById("comment-form").reset();
-  } catch (error) {
-    console.error("Error posting comment:", error);
-    alert("Failed to post comment. Please try again later.");
-  }
-});
+  });
 
 function loadComments() {
   fetch("/comments")
     .then((response) => response.json())
     .then((comments) => {
-      commentsList.innerHTML = "";
-      comments.forEach(({ name, comment }) => {
-        const commentElement = document.createElement("div");
-        commentElement.innerHTML = `<strong>${name}</strong>: ${comment}`;
-        commentsList.appendChild(commentElement);
-      });
+      comments.forEach(addCommentToList);
     })
-    .catch((error) => {
-      console.error("Error loading comments:", error);
-      alert("Failed to load comments. Please refresh the page.");
-    });
+    .catch((error) => console.error("Error:", error));
+}
+
+function addCommentToList({ name, comment }) {
+  const commentElement = document.createElement("div");
+  commentElement.innerHTML = `<strong>${name}</strong>: ${comment}`;
+  document.getElementById("comments-list").appendChild(commentElement);
 }
 
 // Load comments when the page loads
-window.onload = loadComments;
+window.onload = checkPassword;
