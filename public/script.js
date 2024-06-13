@@ -1,55 +1,80 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const path = require("path");
-const app = express();
-const PORT = process.env.PORT || 3000;
+const passwordForm = document.getElementById("password-form");
+const commentForm = document.getElementById("comment-form");
+const commentsList = document.getElementById("comments-list");
+const passwordInput = document.getElementById("password-input");
+const errorMessage = document.getElementById("error-message");
 
-const mongoUri = process.env.MONGO_URI;
+passwordForm.addEventListener("submit", async function (event) {
+  event.preventDefault();
+  const password = passwordInput.value;
 
-if (!mongoUri) {
-  console.error("MONGO_URI environment variable is not set");
-  process.exit(1);
+  try {
+    const response = await fetch("/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ password }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Incorrect password");
+    }
+
+    document.getElementById("password-section").style.display = "none";
+    document.getElementById("podcast-section").style.display = "block";
+    errorMessage.textContent = "";
+    loadComments();
+  } catch (error) {
+    errorMessage.textContent = "Incorrect password. Please try again.";
+  }
+});
+
+commentForm.addEventListener("submit", async function (event) {
+  event.preventDefault();
+  const name = document.getElementById("name").value;
+  const comment = document.getElementById("comment").value;
+
+  try {
+    const response = await fetch("/comments", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, comment }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to post comment");
+    }
+
+    const commentElement = document.createElement("div");
+    commentElement.innerHTML = `<strong>${name}</strong>: ${comment}`;
+    commentsList.appendChild(commentElement);
+
+    document.getElementById("comment-form").reset();
+  } catch (error) {
+    console.error("Error posting comment:", error);
+    alert("Failed to post comment. Please try again later.");
+  }
+});
+
+function loadComments() {
+  fetch("/comments")
+    .then((response) => response.json())
+    .then((comments) => {
+      commentsList.innerHTML = "";
+      comments.forEach(({ name, comment }) => {
+        const commentElement = document.createElement("div");
+        commentElement.innerHTML = `<strong>${name}</strong>: ${comment}`;
+        commentsList.appendChild(commentElement);
+      });
+    })
+    .catch((error) => {
+      console.error("Error loading comments:", error);
+      alert("Failed to load comments. Please refresh the page.");
+    });
 }
 
-mongoose
-  .connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => {
-    console.error("MongoDB connection error:", err);
-    process.exit(1);
-  });
-
-const commentSchema = new mongoose.Schema({
-  name: String,
-  comment: String,
-});
-
-const Comment = mongoose.model("Comment", commentSchema);
-
-app.use(express.json());
-app.use(express.static(path.join(__dirname, "../public")));
-
-app.get("/comments", async (req, res) => {
-  try {
-    const comments = await Comment.find();
-    res.json(comments);
-  } catch (err) {
-    console.error("Error reading comments:", err);
-    res.status(500).send("Error reading comments");
-  }
-});
-
-app.post("/comments", async (req, res) => {
-  const newComment = new Comment(req.body);
-  try {
-    await newComment.save();
-    res.status(201).json(newComment);
-  } catch (err) {
-    console.error("Error saving comment:", err);
-    res.status(500).send("Error saving comment");
-  }
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+// Load comments when the page loads
+window.onload = loadComments;

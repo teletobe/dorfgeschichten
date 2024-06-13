@@ -1,20 +1,20 @@
-//  "mongodb+srv://tobiashchristoph:4ShZFZtjWKgYCPFV@podcastcluster.qa6axf0.mongodb.net/?retryWrites=true&w=majority&appName=PodcastCluster";
-require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
+require("dotenv").config();
+
 const app = express();
 const PORT = process.env.PORT || 3000;
+const PASSWORD = process.env.PASSWORD;
+const MONGO_URI = process.env.MONGO_URI;
 
-const mongoUri = process.env.MONGO_URI;
-
-if (!mongoUri) {
-  console.error("MONGO_URI environment variable is not set");
+if (!MONGO_URI) {
+  console.error("MongoDB URI not found in environment variables.");
   process.exit(1);
 }
 
 mongoose
-  .connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("MongoDB connected"))
   .catch((err) => {
     console.error("MongoDB connection error:", err);
@@ -31,6 +31,15 @@ const Comment = mongoose.model("Comment", commentSchema);
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public")));
 
+app.post("/login", (req, res) => {
+  const { password } = req.body;
+  if (password === PASSWORD) {
+    res.status(200).json({ success: true });
+  } else {
+    res.status(401).json({ success: false });
+  }
+});
+
 app.get("/comments", async (req, res) => {
   try {
     const comments = await Comment.find();
@@ -42,7 +51,9 @@ app.get("/comments", async (req, res) => {
 });
 
 app.post("/comments", async (req, res) => {
-  const newComment = new Comment(req.body);
+  const { name, comment } = req.body;
+  const newComment = new Comment({ name, comment });
+
   try {
     await newComment.save();
     res.status(201).json(newComment);
