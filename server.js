@@ -18,6 +18,11 @@ const commentSchema = new mongoose.Schema({
   comment: String,
 });
 
+// Define routes
+app.get("/", (req, res) => {
+  res.send("Welcome to my podcast website!");
+});
+
 const Comment = mongoose.model("Comment", commentSchema);
 
 app.use(express.json());
