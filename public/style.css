@@ -1,12 +1,13 @@
 body {
   font-family: Arial, sans-serif;
   margin: 0;
-  padding: 0;
+  padding: 20px 0 0 0; /* Add top padding to create space from the top */
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   background-color: #f0f0f0;
+  box-sizing: border-box; /* Ensure padding is included in the height calculation */
 }
 
 #password-section,
@@ -16,16 +17,27 @@ body {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 500px; /* Adjust the width of the sections */
+  width: 100%;
 }
 
 #password-section input,
 #comment-form input,
 #comment-form textarea {
-  width: 100%;
+  width: calc(100% - 20px); /* Adjust the width to ensure consistent padding */
   padding: 10px;
   margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 4px;
+  box-sizing: border-box; /* Ensure padding is included in the width */
+}
+
+#title-image {
+  width: 100%;
+  max-width: 100%;
+  height: auto; /* Ensure the image maintains its aspect ratio */
+  margin-bottom: 20px;
+  border-radius: 8px;
 }
 
 #comment-form {

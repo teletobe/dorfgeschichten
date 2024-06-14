@@ -8,25 +8,30 @@
   </head>
   <body>
     <div id="password-section">
-      <h1>Enter Password to Access the Podcast</h1>
+      <h1>Enter Password to Access this Super Secret Website</h1>
       <input type="password" id="password-input" placeholder="Enter Password" />
       <button onclick="checkPassword()">Submit</button>
       <p id="error-message"></p>
     </div>
 
     <div id="podcast-section" style="display: none">
-      <h1>Podcast Episode</h1>
+      <img src="titleimage.jpg" alt="Podcast Title Image" id="title-image" />
+      <h1>Podcast Episode 1</h1>
       <audio controls>
         <source src="podcast.m4a" type="audio/mp4" />
         Your browser does not support the audio element.
       </audio>
 
       <div id="comments-section">
-        <h2>Comments</h2>
+        <h2>Gebts euren Senf dazu:</h2>
         <form id="comment-form">
-          <input type="text" id="name" placeholder="Your Name" required />
-          <textarea id="comment" placeholder="Your Comment" required></textarea>
-          <button type="submit">Submit Comment</button>
+          <input type="text" id="name" placeholder="Dei Name" required />
+          <textarea
+            id="comment"
+            placeholder="Dei Kommentar"
+            required
+          ></textarea>
+          <button type="submit">Senf dazugeben</button>
         </form>
         <div id="comments-list"></div>
       </div>
