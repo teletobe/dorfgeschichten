@@ -5,6 +5,8 @@ const episodeFiles = {
   2: "podcast2.m4a",
 };
 
+let currentEpisode = 1; // Default to episode 1
+
 function checkPassword() {
   const passwordInput = document.getElementById("password-input").value;
   const errorMessage = document.getElementById("error-message");
@@ -12,7 +14,7 @@ function checkPassword() {
   if (passwordInput === correctPassword) {
     document.getElementById("password-section").style.display = "none";
     document.getElementById("podcast-section").style.display = "block";
-    loadComments();
+    loadComments(currentEpisode); // Load comments for the default episode
   } else {
     errorMessage.textContent = "Incorrect password. Please try again.";
   }
@@ -24,7 +26,7 @@ document
     event.preventDefault();
     const name = document.getElementById("name").value;
     const comment = document.getElementById("comment").value;
-    const episode = document.getElementById("episode-selector").value;
+    const episode = currentEpisode; // Use the current episode value
 
     if (name && comment) {
       const commentData = { episode, name, comment };
@@ -50,7 +52,7 @@ function loadComments(episode) {
     .then((response) => response.json())
     .then((comments) => {
       const commentsList = document.getElementById("comments-list");
-      commentsList.innerHTML = "";
+      commentsList.innerHTML = ""; // Clear existing comments
       comments.forEach(addCommentToList);
     })
     .catch((error) => console.error("Error:", error));
@@ -62,17 +64,24 @@ function addCommentToList({ name, comment }) {
   document.getElementById("comments-list").appendChild(commentElement);
 }
 
+// Handle episode selection
 document
   .getElementById("episode-selector")
   .addEventListener("change", function () {
-    const selectedEpisode = this.value;
+    currentEpisode = parseInt(this.value, 10);
     const audioSource = document.getElementById("audio-source");
     const podcastAudio = document.getElementById("podcast-audio");
 
-    audioSource.src = episodeFiles[selectedEpisode];
+    audioSource.src = episodeFiles[currentEpisode];
     podcastAudio.load();
-    loadComments(selectedEpisode);
+    loadComments(currentEpisode);
   });
 
-// Load comments when the page loads
-window.onload = checkPassword;
+// Load comments when the page loads (ensure password check first)
+window.onload = function () {
+  const passwordSection = document.getElementById("password-section");
+  const podcastSection = document.getElementById("podcast-section");
+  if (podcastSection.style.display === "block") {
+    loadComments(currentEpisode);
+  }
+};
