@@ -1,18 +1,19 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
-const cors = require("cors"); // Import CORS middleware
+const cors = require("cors");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors()); // Enable CORS for all routes
+app.use(cors());
 
 // MongoDB connection setup
 const mongoUri = process.env.MONGODB_URI;
 mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const commentSchema = new mongoose.Schema({
+  episode: { type: Number, required: true },
   name: String,
   comment: String,
 });
@@ -23,8 +24,9 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public")));
 
 app.get("/comments", async (req, res) => {
+  const episode = parseInt(req.query.episode, 10);
   try {
-    const comments = await Comment.find();
+    const comments = await Comment.find({ episode });
     res.json(comments);
   } catch (err) {
     res.status(500).send("Error reading comments");
