@@ -26,7 +26,14 @@ app.use(express.static(path.join(__dirname, "../public")));
 app.get("/comments", async (req, res) => {
   const episode = parseInt(req.query.episode, 10);
   try {
-    const comments = await Comment.find({ episode });
+    let comments;
+    if (episode === 1) {
+      comments = await Comment.find({
+        $or: [{ episode: 1 }, { episode: { $exists: false } }],
+      });
+    } else {
+      comments = await Comment.find({ episode });
+    }
     res.json(comments);
   } catch (err) {
     res.status(500).send("Error reading comments");
@@ -46,3 +53,6 @@ app.post("/comments", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+// Uncomment and run this once to migrate existing comments
+migrateComments();
