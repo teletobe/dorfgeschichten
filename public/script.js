@@ -6,9 +6,11 @@ const episodeFiles = {
   3: "podcast3.m4a",
   4: "podcast4.m4a",
   5: "podcast5.m4a",
+  6: "podcast6.m4a",
+  7: "podcast7.m4a",
 };
 
-let currentEpisode = 5; // Default to episode 1
+let currentEpisode = 7; // Default to episode 1
 
 function checkPassword() {
   const passwordInput = document.getElementById("password-input").value;
